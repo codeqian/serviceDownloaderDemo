@@ -3,6 +3,7 @@ package net.codepig.servicedownloaderdemo;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,5 +41,29 @@ public class MainActivity extends AppCompatActivity {
         Intent intent=new Intent(this,DownLoadService.class);
         intent.putExtra("download_url",_url);
         startService(intent);
+    }
+
+    @Override
+    public void onStop(){
+        Log.d("main LOGCAT", "onStop");
+        super.onStop();
+    }
+
+    @Override
+    public void onPause(){
+        Log.d("main LOGCAT", "onPause");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        Log.d("main LOGCAT", "onResume");
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.d("main LOGCAT", "onDestroy");
+        super.onDestroy();
     }
 }
