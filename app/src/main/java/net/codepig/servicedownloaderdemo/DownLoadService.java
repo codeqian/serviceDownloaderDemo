@@ -30,6 +30,7 @@ public class DownLoadService extends IntentService {
     private Handler handler = new Handler();
     private NotificationCompat.Builder builder;
     private NotificationManager manager;
+    private int _notificationID = 1024;
     public DownLoadService() {
         super("DownLoadService");//这就是个name
     }
@@ -41,6 +42,8 @@ public class DownLoadService extends IntentService {
 
     protected void onHandleIntent(Intent intent) {
         try {
+            initNotification();
+
             Bundle bundle = intent.getExtras();
             String downloadUrl = bundle.getString("download_url");
 
@@ -51,13 +54,17 @@ public class DownLoadService extends IntentService {
 
             File file = new File(dirs, "boosj.apk");//输出文件名
             Log.d(TAG,"下载启动："+downloadUrl+" --to-- "+ file.getPath());
+            manager.notify(_notificationID,builder.build());
             // 开始下载
             downloadFile(downloadUrl, file);
             // 下载结束
+            builder.setProgress(0,0,false);//移除进度条
             builder.setContentText("下载结束");
-            manager.notify(30,builder.build());
+            manager.notify(_notificationID,builder.build());
+//            manager.cancelAll();
+//            manager.cancel(_notificationID);
 
-            // 广播下载完成事件，通过广播调起对文件的处理。（就不多说了，看实际需要在app里接收广播就好了。）
+            // 广播下载完成事件，通过广播调起对文件的处理。（就不多说了，在实际需要的地方接收广播就好了。）
             Intent sendIntent = new Intent("downloadComplete");
             sendIntent.putExtra("downloadFile", file.getPath());
             sendBroadcast(sendIntent);
@@ -120,8 +127,9 @@ public class DownLoadService extends IntentService {
     private Runnable run = new Runnable() {
         public void run() {
             int _pec=(int) (downloadLength*100 / fileLength);
-            builder.setProgress(100, _pec, false);//最大值、当前值、是否显示具体进度
-            manager.notify(30,builder.build());
+            builder.setContentText("下载中……"+_pec+"%");
+            builder.setProgress(100, _pec, false);//显示进度条，参数分别是最大值、当前值、是否显示具体进度（false显示具体进度，true就只显示一个滚动色带）
+            manager.notify(_notificationID,builder.build());
             handler.postDelayed(run, 1000);
         }
     };
@@ -133,9 +141,9 @@ public class DownLoadService extends IntentService {
         super.onDestroy();
     }
 
-    public void sendprogressnotification(View view){
-        builder = new NotificationCompat.Action.Builder(this);
-        builder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle("下载文件").setContentText("下载中……");
+    public void initNotification(){
+        builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle("下载文件").setContentText("下载中……");//图标、标题、内容这三个设置是必须要有的。
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
 }
