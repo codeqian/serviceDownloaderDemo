@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
