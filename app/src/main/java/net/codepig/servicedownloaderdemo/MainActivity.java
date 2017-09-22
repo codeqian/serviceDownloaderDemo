@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         goBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String _url=urlText.getText().toString();
+                _url=urlText.getText().toString();
                 //start download
                 start_service();
             }
